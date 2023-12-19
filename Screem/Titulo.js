@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const StaticHeader = () => {
   return (
     <View style={styles.headerContainer}>
-      <Text style={styles.headerTitle}>Personal administrativo</Text>
+      <Text style={styles.headerTitle}>Personal administrativo ASFI</Text>
     </View>
   );
 };

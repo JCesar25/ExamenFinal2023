@@ -5,8 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./Screem/Login";
 import PageMain from "./Screem/PageMain";
 import PagesMainDetails from "./Screem/PagesMainDetails";
-import AñadirUsuarios from "./Screem/AñadirUsuarios"
-
+import AñadirUsuarios from "./Screem/AñadirUsuarios";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -18,13 +17,16 @@ export default function App() {
           component={Login}
           options={{ headerShown: false }}
         />
+
         <Stack.Screen
           name="PaginaPrincipal"
           component={PageMain}
-          options={{ headerShown: false }}
-       
-    
-    
+          options={{
+            headerStyle: {
+              backgroundColor: "green", // Fondo verde
+            },
+            headerTintColor: "white", // Texto blanco
+          }}
         />
 
         <Stack.Screen name="PaginaDeDetalles" component={PagesMainDetails} />

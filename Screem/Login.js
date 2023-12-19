@@ -1,70 +1,79 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ImageBackground, Alert, TouchableWithoutFeedback } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ImageBackground,
+  Alert,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { auth } from "../Firebase/FirebaseConnexion"; // Importa el módulo de autenticación de Firebase
+import {
+ 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
-const WelcomeScreen = () => {
-  const navigation = useNavigation();
-
+const WelcomeScreen = ({ navigation }) => {
   // Estados para guardar información del formulario
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    // Guardamos en una variable la condición que tiene que cumplir el input CORREO
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(email)) {
-      Alert.alert('Error', 'Introduce un correo electrónico válido');
-    } else if (!password) {
-      Alert.alert('Error', 'Introduce una contraseña');
-    } else {
-      // Aquí puedes realizar acciones adicionales, como iniciar sesión
-      navigation.navigate('PaginaPrincipal');
-      console.log('Iniciar sesión:', email, password);
-      // Limpia los datos del formulario después de iniciar sesión
-      setEmail('');
-      setPassword('');
-    }
+  const handleLogin = async () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log("inicio de seccion exitoso");
+        const user = userCredential.user;
+        console.log({user});
+        Alert.alert("inicio de seccion exitoso",)
+        navigation.navigate("PaginaPrincipal");
+      })
+      .catch((error) => {
+        console.log("error inicio de seccion:", error.code);
+        Alert.alert("error inicio de seccion:", error.code)
+      });
   };
 
-  const handleRegister = () => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(email)) {
-      Alert.alert('Error', 'Introduce un correo electrónico válido');
-    } else if (!password) {
-      Alert.alert('Error', 'Introduce una contraseña');
-    } else {
-      // Aquí puedes realizar acciones adicionales, como registrar al usuario
-      navigation.navigate('PaginaPrincipal');
-      console.log('Registrarse:', email, password);
-      // Limpia los datos del formulario después de registrarse
-      setEmail('');
-      setPassword('');
-    }
+  const handleRegister = async () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log("cuenta creada exitoso");
+        const user = userCredential.user;
+        console.log(user);
+        Alert.alert("se a registrado exitosamente")
+        navigation.navigate("PaginaPrincipal");
+     
+      })
+      .catch((error) => {
+        console.log("error al registrar tu cuenta:", error);
+        
+      });
   };
 
   return (
     <TouchableWithoutFeedback onPress={() => {}}>
       <ImageBackground
-        source={require('../Imagenes/LogoUDI.png')}
+        source={require("../Imagenes/LogoUDI.png")}
         style={styles.backgroundImage}
       >
         <View style={styles.container}>
-          <Text style={styles.welcomeText}>Bienvenido a mi app</Text>
+          <Text style={styles.welcomeText}>Bienvenido a mi app UDI</Text>
 
           <TextInput
             style={styles.input}
             placeholder="Correo Electrónico"
             value={email}
-            onChangeText={text => setEmail(text)}
+            onChangeText={(text) => setEmail(text)}
           />
           <TextInput
             style={styles.input}
             placeholder="Contraseña"
             secureTextEntry
             value={password}
-            onChangeText={text => setPassword(text)}
+            onChangeText={(text) => setPassword(text)}
           />
 
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -83,43 +92,42 @@ const WelcomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   backgroundImage: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    justifyContent: 'center',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    justifyContent: "center",
   },
   welcomeText: {
     fontSize: 30,
-    color: 'white',
+    color: "white",
     marginBottom: 20,
   },
   input: {
     height: 40,
-    borderColor: 'white',
+    borderColor: "white",
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 10,
     paddingLeft: 10,
     width: 250,
-    color: 'white',
+    color: "white",
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
   },
   buttonText: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
   },
 });
 
 export default WelcomeScreen;
-
