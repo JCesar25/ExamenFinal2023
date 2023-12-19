@@ -12,11 +12,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Inicio de Seccion"
           component={Login}
           options={{ headerShown: false }}
-        />
+        /> */}
+
 
         <Stack.Screen
           name="PaginaPrincipal"

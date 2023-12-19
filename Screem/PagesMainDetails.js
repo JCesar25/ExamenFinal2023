@@ -12,12 +12,10 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../Firebase/FirebaseConnexion";
 
 const UserDetails = ({ route, navigation }) => {
-  const { photo, name, email, description, login } = route.params;
+  const { photo, name, email, description, login, id } = route.params;
 
-  const handleEdit = async(id) => {
+  const handleEdit = async (id) => {
     try {
-      const promesa = await updateDoc(doc(db, "UserNew", id));
-      Alert.alert("Se ah eliminado correctamente..");
       navigation.navigate("AñadirUsuarios");
     } catch (error) {
       Alert.alert("cargando datos");
@@ -25,32 +23,18 @@ const UserDetails = ({ route, navigation }) => {
     }
   };
 
-  const handleDelete = async ( userId) => {
+  const deleteUser = async (userId) => {
     try {
-        // Construye la referencia al documento que deseas eliminar
-        const iddocumen= d28F63TufjmuX4DcuKV9
-        const userRef = doc(db, "UserNew", userId);
+      // Construye la referencia al documento que deseas eliminar
+      const userRef = doc(db, "UserNew", userId);
 
-        // Elimina el documento
-       try {
-        await deleteDoc(userRef);
-        console.log("Documento eliminado con éxito");
-        
-       } catch (error) {
-        Alert.alert("FALLIDO");
-        console.log("FALLIDO DELETE:::!!", error)
-        
-       }
-    
-       
-        console.log("idlogin: ", userId)
-        navigation.navigate("PaginaPrincipal");
+      // Elimina el documento
+      await deleteDoc(userRef);
+      navigation.navigate("PaginaPrincipal")
 
-
+      console.log("Documento eliminado con éxito");
     } catch (error) {
-      Alert.alert("FALLIDO");
-      console.log("FALLIDO DELETE:::!!")
-      
+      console.error("Error al eliminar el documento:", error);
     }
   };
 
@@ -60,16 +44,13 @@ const UserDetails = ({ route, navigation }) => {
       <Text style={styles.userName}>{name}</Text>
       <Text style={styles.userEmail}>{email}</Text>
       <Text style={styles.userEmail}>{description}</Text>
-      <Text style={styles.userEmail}>hola{login}</Text>
+      <Text style={styles.userEmail}>ID DE FIREBASE : {id}</Text>
 
-      <TouchableOpacity style={styles.button} onPress={()=>handleEdit(login)}>
+      <TouchableOpacity style={styles.button} onPress={() => handleEdit(login)}>
         <Text style={styles.buttonText}>Editar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleDelete(login)}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => deleteUser(id)}>
         <Text style={styles.buttonText}>Eliminar</Text>
       </TouchableOpacity>
     </View>

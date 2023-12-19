@@ -22,19 +22,18 @@ import {
 import { db } from "../Firebase/FirebaseConnexion";
 
 // Define el componente UserList
-const UserList = ({ navigation,route }) => {
+const UserList = ({ navigation, route }) => {
   // Estados para usuarios, tarjetas y el estado combinado
-  
+
   const [users, setUsers] = useState([]);
 
   const [dbnew, setDbNew] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
+  const [IDFirebase, setIDFirebase] = useState("");
 
   // Función para cargar usuarios desde la API al montar el componente
   useEffect(() => {
     fetchData();
-   
- 
   }, []);
 
   // Función para cargar usuarios desde la API
@@ -42,50 +41,71 @@ const UserList = ({ navigation,route }) => {
     try {
       const response = await axios.get("https://randomuser.me/api/?results=5");
       setUsers(response.data.results);
-  
+
       const q = query(collection(db, "UserNew"));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const userNewArray = [];
-  
+
         querySnapshot.forEach((doc) => {
+          
           const userData = doc.data();
           
-          
-  
-          // Agrega el ID del documento y otros campos al array
-          userNewArray.push(
-            userData
-            
-          );
-          console.log("userdata: ", userData )
+          const NameFirst = doc.data().name.first;
+          const NameLast = doc.data().name.last;
+          const email= doc.data().email;
+          const urlFoto = doc.data().picture;
+          const descripcion1 = doc.data().description;
+          const loginUuid= doc.data().login.uuid;
+          const obejto ={
+            id:doc.id,
+            login:{uuid: loginUuid},
+            name:{first:NameFirst, last:NameLast},
+            picture:urlFoto,
+            email:email,
+            descripcion:descripcion1
+   
+
+        }
+        
+         ;
+          console.log(" documento :   ", doc.data().picture)
+
+          console.log(" userNOmbnre :   ",  NameFirst )
+          console.log(" userApellido :   ", NameLast)
+          console.log(" correo :   ",  email)
+          console.log(" descripcion :   ", descripcion1)
+          console.log(" usurl foto :   ", urlFoto)
+
+         
+          console.log(" OBEJTO :   ", obejto)
+
+          userNewArray.push(obejto)
         });
-  
+
         setDbNew(userNewArray);
-  
+        console.log("usuarios de la base de datos1111: ", userNewArray);
+
         // Combina los datos de usuarios y tarjetas
-        const combined = [...userNewArray, ...response.data.results];
-        setCombinedData(combined);
-  
-        console.log("DATOS COMBINADOS1:  ", combined);
+        /* const combined = [...userNewArray, ...response.data.results];
+        setCombinedData(combined); */
       });
+    
     } catch (error) {
       console.error("Error fetching data:", error);
       Alert.alert("Error", "No se pudo obtener la lista de usuarios.");
     }
   };
-  
- 
+
   // Función para navegar a los detalles de un usuario desde la API
   const navigateToUserDetails = (user) => {
-   
     try {
-     
       navigation.navigate("PaginaDeDetalles", {
+        id:user.id,
         photo: user.picture.medium,
         name: `${user.name.first} ${user.name.last}`,
         email: user.email,
         description: user.description,
-        login:user.login.uuid
+        login: user.login.uuid,
       });
     } catch (error) {
       console.log("error en la navegacion Detalle");
@@ -105,6 +125,7 @@ const UserList = ({ navigation,route }) => {
       <Text style={styles.userEmail}>{item.email}</Text>
       <Text style={styles.userEmail}>{item.description}</Text>
       <Text style={styles.userEmail}>{item.login.uuid}</Text>
+      <Text style={styles.userEmail}>{item.id}</Text>
     </TouchableOpacity>
   );
 
@@ -132,7 +153,6 @@ const UserList = ({ navigation,route }) => {
       { cancelable: false }
     );
   };
- 
 
   // Renderizar el componente
   return (
@@ -140,12 +160,11 @@ const UserList = ({ navigation,route }) => {
       <Titulo />
       {/* Renderizar lista de usuarios desde la API */}
       <FlatList
-        data={combinedData}
+        data={dbnew}
         keyExtractor={(user) => user.login.uuid}
         renderItem={renderUserCard}
         showsVerticalScrollIndicator={false}
       />
-     
 
       {/* Menú inferior */}
       <View style={styles.bottomMenu}>
@@ -154,11 +173,7 @@ const UserList = ({ navigation,route }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuButton}
-          onPress={() =>
-            navigation.navigate("AñadirUsuarios")
-                          
-            
-          }
+          onPress={() => navigation.navigate("AñadirUsuarios")}
         >
           <Ionicons name="add-circle-outline" size={44} color="white" />
         </TouchableOpacity>

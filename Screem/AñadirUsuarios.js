@@ -105,6 +105,8 @@ const AddCard = ({ navigation, route }) => {
       const storageRef = ref(storage, storagePath);
       const metadata = { contentType: "image/png" };
 
+
+      // validacion que se suba la iamgen a storage FIREBASE
       try {
         const imageUrl = await new Promise((resolve, reject) => {
           const uploadTask = uploadBytesResumable(storageRef, BLock, metadata);
@@ -114,12 +116,13 @@ const AddCard = ({ navigation, route }) => {
             (snapshot) => {
               const progress =
                 (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              console.log(`Upload is ${progress}% done`);
+                 console.log(`Upload is ${progress}% done`);
             },
             (error) => {
               console.error("Error durante la subida:", error);
               reject(error);
             },
+            //Esperando que suba la url a storage para Obtener la URL
             async () => {
               try {
                 const url = await getDownloadURL(storageRef);
@@ -132,42 +135,32 @@ const AddCard = ({ navigation, route }) => {
             }
           );
         });
+
+        // validacion para agregar  ala base de datos
         try {
           const docRef=await addDoc(collection(db, "UserNew",), {
             name: { first, last },
             email: selectedEmail,
             login: { uuid: imageId },
             picture: { medium: imageUrl },
-            description,
-            id:IDNEW 
+            description 
+        
             
           });
         
           setIDfirebase(docRef.id)
           console.log("Document written with ID: ", docRef.id);
-          
-          console.log("Document written with ID: ", docRef);
-
-
           console.log("DB firebase success");
+
         } catch (error) {
           console.log("DB firebase fallido", error);
         }
-        console.log("URL de la imagen:", imageUrl);
 
-        const Objeto = {
-          name: { first, last },
-          email: selectedEmail,
-          login: { uuid: imageId },
-          picture: { medium: imageUrl },
-          description,
+
+        console.log("id del archivo para mandar ", IDfirebase)
+        navigation.navigate("PaginaPrincipal");
           
-        };
-       console.log("ID de estado: ", IDfirebase)
-        console.log("obejto con los datos con el block y base64: ", Objeto);
-        navigation.navigate("PaginaPrincipal",{
-          id: IDfirebase
-        });
+      
       } catch (error) {
         console.log("subir el archivo a firebase FALLIDO ::!!!!", error);
       }
