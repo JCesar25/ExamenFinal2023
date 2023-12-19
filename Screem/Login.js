@@ -48,7 +48,7 @@ const WelcomeScreen = ({ navigation }) => {
      
       })
       .catch((error) => {
-        console.log("error al registrar tu cuenta:", error);
+        console.log("error al registrar tu cuenta subiendo a git el nuevo cambioo:", error);
         
       });
   };
