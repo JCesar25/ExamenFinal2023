@@ -33,7 +33,7 @@ const WelcomeScreen = ({ navigation }) => {
       })
       .catch((error) => {
         console.log("error inicio de seccion:", error.code);
-        Alert.alert("error inicio de seccion:", error.code)
+        Alert.alert("error inicio de seccion 1 asiendo comin:", error.code)
       });
   };
 
