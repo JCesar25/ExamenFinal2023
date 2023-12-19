@@ -40,10 +40,10 @@ const WelcomeScreen = ({ navigation }) => {
   const handleRegister = async () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log("cuenta creada exitosoOOOGIT A");
+        console.log("cuenta creada exitosoOOOGIT sdsdsdsA");
         const user = userCredential.user;
         console.log(user);
-        Alert.alert("se a registrado exitosamente")
+        Alert.alert("se a registrado exitosamentedsdsdsdsd")
         navigation.navigate("PaginaPrincipal");
      
       })
