@@ -28,7 +28,7 @@ import {
 } from "firebase/storage";
 import { SelectList } from "react-native-dropdown-select-list";
 
-const AddCard = ({ navigation, route }) => {
+const AditarUSer = ({ navigation, route }) => {
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [email, setEmail] = useState("");
@@ -41,24 +41,7 @@ const AddCard = ({ navigation, route }) => {
   const [url, seturl] = useState("");
   const [selected, setSelected] = useState("");
   const [selectedEmail, setSelectedEmail] = useState(null);
-  const[IDfirebase,setIDfirebase]= useState("")
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get("https://randomuser.me/api/?results=5");
-      setApiEmails(response.data.results.map((user) => user.email));
-      console.log(
-        "datos traidos de la API",
-        response.data.results.map((user) => user.email)
-      );
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
+  const [IDfirebase, setIDfirebase] = useState("");
 
   // Función para convertir una URI a base64
   const uriToBase64 = async (uri) => {
@@ -79,99 +62,14 @@ const AddCard = ({ navigation, route }) => {
       throw error;
     }
   };
-  const uploadPicture = (uri) => {
-    return new Promise((resolve, reject) => {
-      let xhr = new XMLHttpRequest();
-      xhr.onerror = reject;
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          resolve(xhr.response);
-        }
-      };
-      xhr.open("GET", uri);
-      xhr.responseType = "blob";
-      xhr.send();
-    });
-  };
 
   const handleSave2 = async (uri) => {
     try {
-      const imageId = Date.now().toString();
-      const base64data = await uriToBase64(uri);
-      const BLock = await uploadPicture(uri);
-      const storagePath = `imagesNuevas/${imageId}.png`;
-      const IDNEW = `IDNEW/${imageId}`;
-
-      const storageRef = ref(storage, storagePath);
-      const metadata = { contentType: "image/png" };
-
-
-      // validacion que se suba la iamgen a storage FIREBASE
-      try {
-        const imageUrl = await new Promise((resolve, reject) => {
-          const uploadTask = uploadBytesResumable(storageRef, BLock, metadata);
-
-          uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-              const progress =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                 console.log(`Upload is ${progress}% done`);
-            },
-            (error) => {
-              console.error("Error durante la subida:", error);
-              reject(error);
-            },
-            //Esperando que suba la url a storage para Obtener la URL
-            async () => {
-              try {
-                const url = await getDownloadURL(storageRef);
-                resolve(url);
-                console.log("resolve", resolve);
-                console.log("url: ", url);
-              } catch (error) {
-                reject(error);
-              }
-            }
-          );
-        });
-
-        // validacion para agregar  ala base de datos
-        try {
-          const docRef=await addDoc(collection(db, "UserNew",), {
-            name: { first, last },
-            email: selectedEmail,
-            login: { uuid: imageId },
-            picture: { medium: imageUrl },
-            description 
-        
-            
-          });
-        
-          setIDfirebase(docRef.id)
-          console.log("Document written with ID: ", docRef.id);
-          console.log("DB firebase success");
-
-        } catch (error) {
-          console.log("DB firebase fallido", error);
-        }
-
-
-        console.log("id del archivo para mandar ", IDfirebase)
-        navigation.navigate("PaginaPrincipal");
-          
-      
-      } catch (error) {
-        console.log("subir el archivo a firebase FALLIDO ::!!!!", error);
-      }
-
-   
+      console.log("editado correctamente");
     } catch (error) {
       console.log("error save 2", error);
     }
   };
-
-
   const handleCameraPress = async () => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -321,4 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddCard;
+export default AditarUSer;

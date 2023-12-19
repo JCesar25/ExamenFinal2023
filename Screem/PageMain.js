@@ -102,7 +102,8 @@ const UserList = ({ navigation, route }) => {
       navigation.navigate("PaginaDeDetalles", {
         id:user.id,
         photo: user.picture.medium,
-        name: `${user.name.first} ${user.name.last}`,
+        first: user.name.first,
+        last:user.name.last,
         email: user.email,
         description: user.description,
         login: user.login.uuid,
@@ -119,9 +120,9 @@ const UserList = ({ navigation, route }) => {
       onPress={() => navigateToUserDetails(item)}
     >
       <Image source={{ uri: item.picture.medium }} style={styles.userImage} />
-      <Text style={styles.userName}>
-        {`${item.name.first} ${item.name.last}`}
-      </Text>
+     
+      <Text style={styles.userEmail}>{item.name.first}</Text>
+      <Text style={styles.userEmail}>{item.name.last}</Text>
       <Text style={styles.userEmail}>{item.email}</Text>
       <Text style={styles.userEmail}>{item.description}</Text>
       <Text style={styles.userEmail}>{item.login.uuid}</Text>

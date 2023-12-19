@@ -6,6 +6,7 @@ import Login from "./Screem/Login";
 import PageMain from "./Screem/PageMain";
 import PagesMainDetails from "./Screem/PagesMainDetails";
 import AñadirUsuarios from "./Screem/AñadirUsuarios";
+import Editar from "./Screem/Editar"
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -32,6 +33,7 @@ export default function App() {
 
         <Stack.Screen name="PaginaDeDetalles" component={PagesMainDetails} />
         <Stack.Screen name="AñadirUsuarios" component={AñadirUsuarios} />
+        <Stack.Screen name="Editar" component={Editar} />
       </Stack.Navigator>
     </NavigationContainer>
   );

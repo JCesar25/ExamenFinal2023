@@ -12,11 +12,12 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../Firebase/FirebaseConnexion";
 
 const UserDetails = ({ route, navigation }) => {
-  const { photo, name, email, description, login, id } = route.params;
+  const { photo,  email, description, login, id ,first,last} = route.params;
 
   const handleEdit = async (id) => {
     try {
-      navigation.navigate("AñadirUsuarios");
+      console.log("boton funcionando correctamente")
+      navigation.navigate("Editar");
     } catch (error) {
       Alert.alert("cargando datos");
       navigation.navigate("AñadirUsuarios");
@@ -41,7 +42,9 @@ const UserDetails = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Image source={{ uri: photo }} style={styles.userImage} />
-      <Text style={styles.userName}>{name}</Text>
+    
+      <Text style={styles.userName}>name:{first}</Text>
+      <Text style={styles.userName}>last :{last}</Text>
       <Text style={styles.userEmail}>{email}</Text>
       <Text style={styles.userEmail}>{description}</Text>
       <Text style={styles.userEmail}>ID DE FIREBASE : {id}</Text>
