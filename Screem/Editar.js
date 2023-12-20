@@ -17,7 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
-import { doc, setDoc, collection, addDoc,updateDoc} from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, updateDoc } from "firebase/firestore";
 import { storage, database, db } from "../Firebase/FirebaseConnexion";
 import {
   ref,
@@ -43,6 +43,8 @@ const AditarUSer = ({ navigation, route }) => {
   const [selected, setSelected] = useState("");
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [IDfirebase, setIDfirebase] = useState("");
+  const [Validacion, setValidacion] = useState(true);
+  const [urlNUEVA, setValurlNUEVA] = useState("");
 
   // Función para convertir una URI a base64
   const uriToBase64 = async (uri) => {
@@ -78,71 +80,86 @@ const AditarUSer = ({ navigation, route }) => {
       xhr.send();
     });
   };
+
   const handleSave2 = async (uri, idFB) => {
     try {
-      const imageId = Date.now().toString();
-      const base64data = await uriToBase64(uri);
-      const BLock = await uploadPicture(uri);
-      const storagePath = `imagesNuevas1/${imageId}.png`;
-      const IDNEW = `IDNEW/${imageId}`;
-
-      const storageRef = ref(storage, storagePath);
-      const metadata = { contentType: "image/png" };
-
-      // validacion que se suba la iamgen a storage FIREBASE
-      try {
-        const imageUrl = await new Promise((resolve, reject) => {
-          const uploadTask = uploadBytesResumable(storageRef, BLock, metadata);
-
-          uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-              const progress =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log(`Upload is ${progress}% done`);
-            },
-            (error) => {
-              console.error("Error durante la subida:", error);
-              reject(error);
-            },
-            //Esperando que suba la url a storage para Obtener la URL
-            async () => {
-              try {
-                const url = await getDownloadURL(storageRef);
-                resolve(url);
-                console.log("resolve", resolve);
-                console.log("url: ", url);
-              } catch (error) {
-                reject(error);
-              }
-            }
-          );
-        });
-
-        // validacion para EDITAR  la base de datos
-        try {
-          const userRef = doc(db, "UserNew", idFB);
-          await updateDoc(userRef, {
-            name: { first, last },
-            email: email,
-            login: { uuid: imageId },
-            picture: { medium: imageUrl },
-            description,
-          });
-
-          console.log("DB f editado Firebase success");
-        } catch (error) {
-          console.log("DB firebase fallido", error);
+        const imageId = Date.now().toString();
+        const base64data = await uriToBase64(uri);
+        const BLock = await uploadPicture(uri);
+        const storagePath = `imagesNuevas/${imageId}.png`;
+        if (Validacion) {
+          try {
+            const userRef = doc(db, "UserNew", idFB);
+            await updateDoc(userRef, {
+              name: { first, last },
+              email: email,
+              login: { uuid: imageId },
+              picture: {
+                medium: urlphoto,
+              },
+              description,
+            });
+            console.log("validacion verdadero:  success",)
+            navigation.navigate("PaginaPrincipal")
+          } catch (error) {
+            console.log("error en editar la iamgen");
+          }
         }
-
-     
-        navigation.navigate("PaginaPrincipal");
-      } catch (error) {
-        console.log("subir el archivo a firebase FALLIDO ::!!!!", error);
-      }
+        else{
+            const storageRef = ref(storage, storagePath);
+            const metadata = { contentType: "image/png" };
+            const urlIMAGEN = await new Promise((resolve, reject) => {
+              const uploadTask = uploadBytesResumable(storageRef, BLock, metadata);
+    
+              uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                  const progress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                  console.log(`Upload is ${progress}% done`);
+                },
+                (error) => {
+                  console.error("Error durante la subida:", error);
+                  reject(error);
+                },
+                //Esperando que suba la url a storage para Obtener la URL
+                async () => {
+                  try {
+                    const url = await getDownloadURL(storageRef);
+                    resolve(url);
+                    console.log("resolve", resolve);
+                    console.log("url: ", url);
+                  } catch (error) {
+                    reject(error);
+                  }
+                }
+              );
+            })
+            try {
+                const userRef = doc(db, "UserNew", idFB);
+                await updateDoc(userRef, {
+                  name: { first, last },
+                  email: email,
+                  login: { uuid: imageId },
+                  picture: {
+                    medium: urlIMAGEN,
+                  },
+                  description,
+                });
+              } catch (error) {
+                console.log("error en editar la iamgen");
+              }
+              console.log("validacion flase:  success",)
+              navigation.navigate("PaginaPrincipal")
+            
+            
+        }
+    
     } catch (error) {
-      console.log("error save 2", error);
+        console.log("error en la funcion del boton guardar en edit")
+        
     }
+
   };
 
   const handleCameraPress = async () => {
@@ -161,6 +178,8 @@ const AditarUSer = ({ navigation, route }) => {
 
       if (!result.cancelled) {
         setPhoto(result);
+        setValidacion(false);
+
         console.log("Respuesta de la imagen tomada", result.assets[0].uri);
       }
     } catch (error) {
@@ -185,30 +204,20 @@ const AditarUSer = ({ navigation, route }) => {
 
       if (!result.cancelled) {
         setPhoto(result);
+        setValidacion(false);
         console.log("Respuesta de la imagen capturada", result);
       }
     } catch (error) {
       console.error("Error al abrir la galería:", error);
     }
   };
+  const HanleCancelar = () => {
+    navigation.navigate("PaginaPrincipal");
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        {photo ? (
-          <Image
-            source={{ uri: photo.assets[0].uri }}
-            style={styles.previewImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <Image
-            source={{ uri: urlphoto }}
-            style={styles.previewImage}
-            resizeMode="cover"
-          />
-        )}
-
         <Text>Nombres:</Text>
         <TextInput
           style={styles.input}
@@ -239,6 +248,19 @@ const AditarUSer = ({ navigation, route }) => {
           onChangeText={setDescription}
           placeholder="Descripción"
         />
+        {photo ? (
+          <Image
+            source={{ uri: photo.assets[0].uri }}
+            style={styles.previewImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <Image
+            source={{ uri: urlphoto }}
+            style={styles.previewImage}
+            resizeMode="cover"
+          />
+        )}
 
         <TouchableOpacity style={styles.iconButton} onPress={handleCameraPress}>
           <AntDesign name="camerao" size={24} color="white" />
@@ -254,6 +276,9 @@ const AditarUSer = ({ navigation, route }) => {
           onPress={() => handleSave2(photo.assets[0].uri, idFB)}
         >
           <Text style={styles.buttonText}>Guardar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={HanleCancelar}>
+          <Text style={styles.buttonText}>CANCELAR</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

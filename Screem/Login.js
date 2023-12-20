@@ -28,7 +28,7 @@ const WelcomeScreen = ({ navigation }) => {
         console.log("inicio de seccion exitoso");
         const user = userCredential.user;
         console.log({user});
-        Alert.alert("inicio de seccion exitoso",)
+        Alert.alert("inicio de seccion exitosoo",)
         navigation.navigate("PaginaPrincipal");
       })
       .catch((error) => {
