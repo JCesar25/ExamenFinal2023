@@ -23,6 +23,9 @@ import { db } from "../Firebase/FirebaseConnexion";
 
 // Define el componente UserList
 const UserList = ({ navigation, route }) => {
+
+
+  
   // Estados para usuarios, tarjetas y el estado combinado
 
   const [users, setUsers] = useState([]);
@@ -105,7 +108,7 @@ const UserList = ({ navigation, route }) => {
         first: user.name.first,
         last:user.name.last,
         email: user.email,
-        description: user.description,
+        description: user.descripcion,
         login: user.login.uuid,
       });
     } catch (error) {
@@ -124,7 +127,7 @@ const UserList = ({ navigation, route }) => {
       <Text style={styles.userEmail}>{item.name.first}</Text>
       <Text style={styles.userEmail}>{item.name.last}</Text>
       <Text style={styles.userEmail}>{item.email}</Text>
-      <Text style={styles.userEmail}>{item.description}</Text>
+      <Text style={styles.userEmail}>{item.descripcion}</Text>
       <Text style={styles.userEmail}>{item.login.uuid}</Text>
       <Text style={styles.userEmail}>{item.id}</Text>
     </TouchableOpacity>

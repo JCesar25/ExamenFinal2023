@@ -14,10 +14,19 @@ import { db } from "../Firebase/FirebaseConnexion";
 const UserDetails = ({ route, navigation }) => {
   const { photo,  email, description, login, id ,first,last} = route.params;
 
-  const handleEdit = async (id) => {
+  const handleEdit = async () => {
     try {
       console.log("boton funcionando correctamente")
-      navigation.navigate("Editar");
+      navigation.navigate("Editar",{
+        idFB:id,
+        nombre:first,
+        apellido:last,
+        urlFB:photo,
+        email1:email,
+        descripcion1:description
+
+
+      });
     } catch (error) {
       Alert.alert("cargando datos");
       navigation.navigate("AñadirUsuarios");
